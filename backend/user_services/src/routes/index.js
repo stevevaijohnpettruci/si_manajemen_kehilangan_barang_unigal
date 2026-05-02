@@ -5,6 +5,6 @@ import { createUserSchema } from '../validator/schema.js';
 
 const router = Router();
 
-router.post('/users', validate(createUserSchema), handleCreateUser);
+router.post('/api/v1/users', validate(createUserSchema), handleCreateUser);
 
 export default router;
