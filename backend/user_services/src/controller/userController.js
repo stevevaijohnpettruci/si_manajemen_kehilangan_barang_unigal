@@ -9,3 +9,12 @@ export const handleCreateUser = async (req, res, next) => {
     next(err);
   }
 };
+
+export const handleGetUser = async (req, res, next) => {
+  try {
+    const user = await handleGetUserById(req.params.id);
+    response(res, 200, 'User berhasil didapatkan', user);
+  } catch (err) {
+    next(err);
+  }
+};

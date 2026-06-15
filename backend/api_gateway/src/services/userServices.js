@@ -7,24 +7,26 @@ export const getUsers = async () => {
 };
 
 export const getUserById = async (id) => {
-  const { data } = await httpClient.get(
-    `${USER_SERVICE_URL}/api/v1/users/${id}`,
-  );
+  const { data } = await httpClient.get(`${USER_SERVICE_URL}/api/v1/users/${id}`);
   return data;
 };
 
 export const createUser = async (payload) => {
-  const { data } = await httpClient.post(
-    `${USER_SERVICE_URL}/api/v1/users`,
-    payload,
-  );
+  const { data } = await httpClient.post(`${USER_SERVICE_URL}/api/v1/users`, payload);
   return data;
 };
 
-export const loginUser = async (payload) => {
-  const { data } = await httpClient.post(
-    `${USER_SERVICE_URL}/api/v1/users/login`,
-    payload,
-  );
+export const login = async (payload) => {
+  const { data } = await httpClient.post(`${USER_SERVICE_URL}/api/v1/authentications`, payload);
+  return data;
+};
+
+export const refreshToken = async (payload) => {
+  const { data } = await httpClient.put(`${USER_SERVICE_URL}/api/v1/authentications`, payload);
+  return data;
+};
+
+export const logout = async (payload) => {
+  const { data } = await httpClient.delete(`${USER_SERVICE_URL}/api/v1/authentications`, { data: payload });
   return data;
 };

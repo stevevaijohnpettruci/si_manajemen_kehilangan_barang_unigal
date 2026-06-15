@@ -6,9 +6,9 @@ import notificationRoutes from './notificationRoutes.js';
 
 const router = Router();
 
-router.use('/api/v1', userRoutes);
-router.use('/api/v1', reportRoutes);
-router.use('/api/v1', claimRoutes);
-router.use('/api/v1', notificationRoutes);
+router.use(userRoutes);
+router.use(reportRoutes);
+router.use(claimRoutes);
+router.use(notificationRoutes);
 
 export default router;

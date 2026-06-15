@@ -8,9 +8,9 @@ import {
 
 const router = Router();
 
-router.get('/claims', handleGetClaims);
-router.get('/claims/:id', handleGetClaimById);
-router.post('/claims', handleCreateClaim);
-router.put('/claims/:id', handleUpdateClaim);
+router.get('/api/v1/claims', handleGetClaims);
+router.get('/api/v1/claims/:id', handleGetClaimById);
+router.post('/api/v1/claims', handleCreateClaim);
+router.put('/api/v1/claims/:id', handleUpdateClaim);
 
 export default router;

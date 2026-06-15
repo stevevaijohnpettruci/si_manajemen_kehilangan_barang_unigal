@@ -6,7 +6,7 @@ import {
 
 const router = Router();
 
-router.get('/notifications', handleGetNotifications);
-router.post('/notifications', handleCreateNotification);
+router.get('/api/v1/notifications', handleGetNotifications);
+router.post('/api/v1/notifications', handleCreateNotification);
 
 export default router;

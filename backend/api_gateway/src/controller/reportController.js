@@ -1,4 +1,10 @@
-import { getReports, getReportById, createReport, updateReport, deleteReport } from '../services/reportServices.js';
+import {
+  getReports,
+  getReportById,
+  createReport,
+  updateReport,
+  deleteReport,
+} from '../services/reportServices.js';
 import response from '../../../shared/utils/response.js';
 
 export const handleGetReports = async (req, res, next) => {
@@ -21,8 +27,13 @@ export const handleGetReportById = async (req, res, next) => {
 
 export const handleCreateReport = async (req, res, next) => {
   try {
-    const data = await createReport(req.body);
-    response(res, 201, 'report created', data);
+    const payload = {
+      ...req.body,
+      user_id: req.user.id,
+    };
+
+    const response = await createReport(payload);
+    return res.status(201).json(response);
   } catch (err) {
     next(err);
   }

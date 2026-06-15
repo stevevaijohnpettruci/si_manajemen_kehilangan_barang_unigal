@@ -22,6 +22,10 @@ export const up = (pgm) => {
       type: 'varchar(255)',
       notNull: true,
     },
+    role: {
+      type: 'varchar(50)',
+      notNull: true,
+    },
     full_name: {
       type: 'varchar(255)',
       notNull: true,
@@ -35,8 +39,8 @@ export const up = (pgm) => {
       type: 'varchar(255)',
       notNull: true,
     },
-    student_id_number: {
-      type: 'varchar(255)',
+    identity_number: {
+      type: 'varchar(50)',
       notNull: true,
       unique: true,
     },
@@ -45,16 +49,16 @@ export const up = (pgm) => {
       notNull: true,
     },
     phone_number: {
-      type: 'varchar(255)',
+      type: 'varchar(50)',
       notNull: true,
     },
     faculty: {
       type: 'varchar(255)',
-      notNull: true,
+      notNull: false,
     },
     study_program: {
       type: 'varchar(255)',
-      notNull: true,
+      notNull: false,
     },
     created_at: {
       type: 'timestamp',

@@ -1,16 +1,14 @@
 import { Router } from 'express';
-import {
-  handleGetUsers,
-  handleGetUserById,
-  handleCreateUser,
-  handleLoginUser,
-} from '../controller/userController.js';
+import { handleGetUsers, handleGetUserById, handleCreateUser, handleLogin, handleRefreshToken, handleLogout } from '../controller/userController.js';
+import auth from '../../../shared/middleware/auth.js';
 
 const router = Router();
 
-router.get('/users', handleGetUsers);
-router.get('/users/:id', handleGetUserById);
-router.post('/users', handleCreateUser);
-router.post('/users/login', handleLoginUser);
+router.post('/api/v1/users', handleCreateUser);
+router.post('/api/v1/authentications', handleLogin);
+router.put('/api/v1/authentications', handleRefreshToken);
+router.delete('/api/v1/authentications', handleLogout);
+router.get('/api/v1/users', auth, handleGetUsers);
+router.get('/api/v1/users/:id', auth, handleGetUserById);
 
 export default router;

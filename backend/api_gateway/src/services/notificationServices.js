@@ -1,5 +1,5 @@
-import httpClient from '../../utils/httpClient.js';
-import { NOTIFICATION_SERVICE_URL } from '../../config/env.js';
+import httpClient from '../utils/httpClient.js';
+import { NOTIFICATION_SERVICE_URL } from '../config/env.js';
 
 export const getNotifications = async (userId) => {
   const { data } = await httpClient.get(

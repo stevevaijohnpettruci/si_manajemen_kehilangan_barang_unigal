@@ -1,5 +1,5 @@
-import httpClient from '../../utils/httpClient.js';
-import { CLAIM_SERVICE_URL } from '../../config/env.js';
+import httpClient from '../utils/httpClient.js';
+import { CLAIM_SERVICE_URL } from '../config/env.js';
 
 export const getClaims = async () => {
   const { data } = await httpClient.get(`${CLAIM_SERVICE_URL}/api/v1/claims`);

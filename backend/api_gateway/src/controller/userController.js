@@ -1,4 +1,11 @@
-import { getUsers, getUserById, createUser, loginUser } from '../services/userServices.js';
+import {
+  getUsers,
+  getUserById,
+  createUser,
+  login,
+  refreshToken,
+  logout,
+} from '../services/userServices.js';
 import response from '../../../shared/utils/response.js';
 
 export const handleGetUsers = async (req, res, next) => {
@@ -21,17 +28,35 @@ export const handleGetUserById = async (req, res, next) => {
 
 export const handleCreateUser = async (req, res, next) => {
   try {
-    const data = await createUser(req.body);
-    response(res, 201, 'user created', data);
+    const response = await createUser(req.body);
+    return res.status(201).json(response);
   } catch (err) {
     next(err);
   }
 };
 
-export const handleLoginUser = async (req, res, next) => {
+export const handleLogin = async (req, res, next) => {
   try {
-    const data = await loginUser(req.body);
-    response(res, 200, 'login success', data);
+    const response = await login(req.body);
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleRefreshToken = async (req, res, next) => {
+  try {
+    const response = await refreshToken(req.body);
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleLogout = async (req, res, next) => {
+  try {
+    const response = await logout(req.body);
+    return res.status(200).json(response);
   } catch (err) {
     next(err);
   }

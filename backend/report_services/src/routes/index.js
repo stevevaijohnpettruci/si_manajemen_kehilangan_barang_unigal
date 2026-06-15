@@ -1,0 +1,24 @@
+import { Router } from 'express';
+import { validate } from '../../../shared/middleware/validate.js';
+import { addReportSchema } from '../validator/schema.js';
+import {
+  handleCreateReport,
+  handleGetReports,
+  handleGetReportById,
+  handleUpdateReport,
+  handleDeleteReport,
+} from '../controller/reportController.js';
+
+const router = Router();
+
+router.get('/api/v1/reports', handleGetReports);
+router.get('/api/v1/reports/:id', handleGetReportById);
+router.post('/api/v1/reports', validate(addReportSchema), handleCreateReport);
+router.put(
+  '/api/v1/reports/:id',
+  validate(addReportSchema),
+  handleUpdateReport,
+);
+router.delete('/api/v1/reports/:id', handleDeleteReport);
+
+export default router;
