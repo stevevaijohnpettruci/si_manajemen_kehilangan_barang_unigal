@@ -15,6 +15,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import Swal from 'sweetalert2';
+import { getInitials } from '@/lib/utils';
 
 // 2. Hapus properti 'active: true' yang di-hardcode
 const navigation = [
@@ -137,12 +138,18 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-white/20 px-4 py-3">
         {/* User info */}
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 bg-white/20">
-            <img
-              src="/avatar-user.png"
-              alt="Avatar"
-              className="w-full h-full object-cover"
-            />
+          <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 bg-white/20 flex items-center justify-center">
+            {user?.avatar_url ? (
+              <img
+                src={user.avatar_url}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-white font-semibold text-sm leading-none">
+                {getInitials(user?.full_name || 'Pengguna')}
+              </span>
+            )}
           </div>
           <div className="leading-tight">
             <p className="text-white font-semibold text-sm leading-none">

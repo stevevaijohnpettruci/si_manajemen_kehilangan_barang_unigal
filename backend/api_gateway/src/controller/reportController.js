@@ -9,7 +9,10 @@ import response from '../../../shared/utils/response.js';
 
 export const handleGetReports = async (req, res, next) => {
   try {
-    const data = await getReports();
+    const queryParams = req.query; 
+    
+    const data = await getReports(queryParams);
+    
     response(res, 200, 'success', data);
   } catch (err) {
     next(err);

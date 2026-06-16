@@ -18,6 +18,10 @@ export const up = (pgm) => {
       type: 'VARCHAR(50)',
       notNull: true,
     },
+    user_fullname: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
     item_name: {
       type: 'TEXT',
       notNull: true,

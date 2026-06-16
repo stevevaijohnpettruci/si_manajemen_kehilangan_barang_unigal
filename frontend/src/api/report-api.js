@@ -2,14 +2,19 @@ import BASE_URL from './api-config';
 import axios from 'axios';
 
 // GET /api/v1/reports - Mengambil semua laporan
-function getReports(token) {
+// GET /api/v1/reports
+function getReports(token, filter = '', page = 1, limit = 10) {
   return axios.get(`${BASE_URL}/reports`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params: {
+      ...(filter && { filter }),
+      page: page,
+      limit: limit,
+    },
   });
 }
-
 // GET /api/v1/reports/:id - Mengambil detail laporan spesifik
 function getReportById(id, token) {
   return axios.get(`${BASE_URL}/reports/${id}`, {

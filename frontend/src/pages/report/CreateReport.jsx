@@ -17,8 +17,43 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { ChevronRight, CloudUpload } from 'lucide-react';
+import { createReport } from '@/api/report-api';
+import { useState } from 'react';
+
+const dateLost = new Date().toISOString();
 
 export default function CreateReport() {
+  const [report, setReport] = useState({
+    user_id: '',
+    user_fullname: '',
+    item_name: '',
+    description: '',
+    category: '',
+    image_url: '',
+    location_lost: '',
+    date_lost: dateLost,
+    status: 'unclaimed',
+    contact_phone: '',
+  });
+  const handleSubmitReport = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const fullname = localStorage.getItem('user');
+
+      const response = await createReport(
+        {
+          ...report,
+          user_fullname: fullname,
+          date_lost: dateLost,
+        },
+        token,
+      );
+      
+      console.log('response : ', response.data);
+    } catch (err) {
+      console.error('error:', err);
+    }
+  };
   const topBreadcrumb = (
     <Breadcrumb>
       <BreadcrumbList>
@@ -59,6 +94,12 @@ export default function CreateReport() {
                 </label>
                 <Input
                   placeholder="Isi nama kamu"
+                  onChange={(e) =>
+                    setReport({
+                      ...report,
+                      item_name: e.target.value,
+                    })
+                  }
                   className="w-full h-12 px-4 rounded-lg border-neutral-200 focus-visible:ring-[#8B52A1] text-sm bg-white"
                 />
               </div>
@@ -79,13 +120,21 @@ export default function CreateReport() {
                 <label className="text-[15px] font-semibold text-neutral-900">
                   Kategori
                 </label>
-                <Select>
-                  <SelectTrigger className="w-full h-12 px-4 rounded-lg border-neutral-200 focus:ring-[#8B52A1] text-sm text-neutral-500 bg-white">
-                    <SelectValue placeholder="Saya kehilangan" />
+                <Select
+                  onValueChange={(value) =>
+                    setReport({
+                      ...report,
+                      category: value,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih kategori" />
                   </SelectTrigger>
+
                   <SelectContent>
-                    <SelectItem value="hilang">Saya kehilangan</SelectItem>
-                    <SelectItem value="menemukan">Saya menemukan</SelectItem>
+                    <SelectItem value="lost">Saya kehilangan</SelectItem>
+                    <SelectItem value="found">Saya menemukan</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -107,8 +156,13 @@ export default function CreateReport() {
                   Bagaimana ciri - ciri barang kamu?
                 </label>
                 <Textarea
-                  placeholder="Tuliskan ciri - ciri barang kamu yang hilang"
-                  className="flex-1 min-h-[220px] w-full px-4 rounded-lg border-neutral-200 focus-visible:ring-[#8B52A1] text-sm resize-none py-4 bg-white"
+                  value={report.description}
+                  onChange={(e) =>
+                    setReport({
+                      ...report,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
 

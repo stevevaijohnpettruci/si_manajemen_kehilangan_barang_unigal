@@ -1,8 +1,10 @@
 import httpClient from '../utils/httpClient.js';
 import { REPORT_SERVICE_URL } from '../config/env.js';
 
-export const getReports = async () => {
-  const { data } = await httpClient.get(`${REPORT_SERVICE_URL}/api/v1/reports`);
+export const getReports = async (queryParams = {}) => {
+  const { data } = await httpClient.get(`${REPORT_SERVICE_URL}/api/v1/reports`, {
+    params: queryParams,
+  });
   return data;
 };
 

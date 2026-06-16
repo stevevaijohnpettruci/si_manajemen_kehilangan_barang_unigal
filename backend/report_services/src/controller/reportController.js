@@ -1,4 +1,10 @@
-import { createReport, getReports, getReportById, updateReport, deleteReport } from '../services/reportServices.js';
+import {
+  createReport,
+  getReports,
+  getReportById,
+  updateReport,
+  deleteReport,
+} from '../services/reportServices.js';
 import response from '../../../shared/utils/response.js';
 
 export const handleCreateReport = async (req, res, next) => {
@@ -12,8 +18,12 @@ export const handleCreateReport = async (req, res, next) => {
 
 export const handleGetReports = async (req, res, next) => {
   try {
-    const data = await getReports();
-    response(res, 200, 'success', data);
+    const { filter } = req.query; 
+    const { page, limit, offset } = req.pagination;
+    
+    const result = await getReports(filter, limit, offset);
+    
+    response(res, 200, 'success', result);
   } catch (err) {
     next(err);
   }
