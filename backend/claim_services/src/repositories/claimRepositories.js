@@ -8,76 +8,114 @@ class ClaimRepositories {
   async createNewClaim({
     id,
     report_id,
-    role,
+    user_id,
+    claim_type,
+    reporter_name,
+    reporter_role,
     location,
-    phone_number,
+    contact_phone,
     description,
     image_url,
     message,
-    status,
+    status = 'pending',
+    report_owner_id, // [BARU] Tambahkan ini
   }) {
-    const createdAt = new Date().toISOString();
-    const updatedAt = new Date().toISOString();
-
     const result = await this._pool.query(
-      `INSERT INTO claims(id, report_id, role, location, phone_number, description, image_url, message, status, created_at, updated_at)
-             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+      `INSERT INTO claims(id, report_id, user_id, claim_type, reporter_name, reporter_role, location, contact_phone, description, image_url, message, status, report_owner_id)
+       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
       [
         id,
         report_id,
-        role,
+        user_id,
+        claim_type,
+        reporter_name,
+        reporter_role,
         location,
-        phone_number,
+        contact_phone,
         description,
         image_url,
         message,
         status,
-        createdAt,
-        updatedAt,
+        report_owner_id, // [BARU] Masukkan ke query
       ],
     );
     return result.rows[0];
   }
 
-  async findClaimByUserId(user_id) {
+  async findAllClaims(limit, offset) {
     const result = await this._pool.query(
-      'SELECT * FROM claims WHERE user_id = $1',
-      [user_id],
+      'SELECT * FROM claims ORDER BY created_at DESC, id DESC LIMIT $1 OFFSET $2',
+      [limit, offset],
     );
-    return result.rows;
+
+    const countResult = await this._pool.query('SELECT COUNT(*) FROM claims');
+    const totalData = parseInt(countResult.rows[0].count, 10);
+
+    return {
+      data: result.rows,
+      meta: {
+        totalData,
+        totalPages: Math.ceil(totalData / limit),
+      },
+    };
   }
 
-  async updateClaim(
-    id,
-    user_id,
-    {
-      report_id,
-      role,
-      location,
-      phone_number,
-      description,
-      image_url,
-      message,
-      status,
-    },
-  ) {
-    const updatedAt = new Date().toISOString();
+  async findClaimByUserId(user_id, limit, offset) {
     const result = await this._pool.query(
-      `UPDATE claims SET report_id=$1, role=$2, location=$3, phone_number=$4, description=$5, image_url=$6, message=$7, status=$8, updated_at=$9
-             WHERE id=$10 AND user_id=$11 RETURNING id`,
-      [
-        report_id,
-        role,
-        location,
-        phone_number,
-        description,
-        image_url,
-        message,
-        status,
-        updatedAt,
-        id,
-        user_id,
-      ],
+      'SELECT * FROM claims WHERE user_id = $1 ORDER BY created_at DESC, id DESC LIMIT $2 OFFSET $3',
+      [user_id, limit, offset],
+    );
+
+    const countResult = await this._pool.query(
+      'SELECT COUNT(*) FROM claims WHERE user_id = $1',
+      [user_id],
+    );
+    const totalData = parseInt(countResult.rows[0].count, 10);
+
+    return {
+      data: result.rows,
+      meta: {
+        totalData,
+        totalPages: Math.ceil(totalData / limit),
+      },
+    };
+  }
+
+  // [BARU] Fungsi untuk mengambil data Pengajuan Masuk (Inbox)
+  async findIncomingClaims(report_owner_id, limit, offset) {
+    const result = await this._pool.query(
+      'SELECT * FROM claims WHERE report_owner_id = $1 ORDER BY created_at DESC, id DESC LIMIT $2 OFFSET $3',
+      [report_owner_id, limit, offset],
+    );
+
+    const countResult = await this._pool.query(
+      'SELECT COUNT(*) FROM claims WHERE report_owner_id = $1',
+      [report_owner_id],
+    );
+    const totalData = parseInt(countResult.rows[0].count, 10);
+
+    return {
+      data: result.rows,
+      meta: {
+        totalData,
+        totalPages: Math.ceil(totalData / limit),
+      },
+    };
+  }
+
+  async findClaimById(id) {
+    const result = await this._pool.query(
+      'SELECT * FROM claims WHERE id = $1',
+      [id],
+    );
+    return result.rows[0] || null;
+  }
+
+  async updateClaimStatus(id, status) {
+    const result = await this._pool.query(
+      `UPDATE claims SET status=$1, updated_at=NOW()
+       WHERE id=$2 RETURNING id`,
+      [status, id],
     );
     return result.rows[0];
   }

@@ -2,6 +2,8 @@ import DashboardLayout from '../DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getReportByUserId } from '@/api/report-api';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,7 +27,8 @@ import {
   Inbox,
   Trash2,
   Pencil,
-} from 'lucide-react'; // Tambahkan Inbox untuk icon empty state
+  Loader2,
+} from 'lucide-react';
 import {
   Pagination,
   PaginationContent,
@@ -35,11 +38,73 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
-// Ubah array ini menjadi [] untuk melihat tampilan Empty State
-const myReports = [];
-
 export default function MyReport() {
   const navigate = useNavigate();
+  
+  const [myReports, setMyReports] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [meta, setMeta] = useState({ totalData: 0, totalPages: 1 });
+  
+  // STATE BARU UNTUK TAB
+  const [activeTab, setActiveTab] = useState('semua');
+
+  // FUNGSI UNTUK MENGGANTI TAB & RESET HALAMAN
+  const handleTabChange = (value) => {
+    setActiveTab(value);
+    setCurrentPage(1); 
+  };
+
+  useEffect(() => {
+    const fetchMyReports = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('accessToken');
+        let userId = '';
+
+        if (token) {
+          const payloadBase64 = token.split('.')[1];
+          const decodedJson = atob(payloadBase64);
+          const decodedData = JSON.parse(decodedJson);
+          userId = decodedData.id || decodedData.userId || decodedData.user_id;
+        }
+
+        if (userId && token) {
+          // Siapkan filter
+          const filterParam = activeTab === 'semua' ? '' : activeTab;
+          
+          // Kirim userId, token, filter, currentPage, dan limit
+          const response = await getReportByUserId(userId, token, filterParam, currentPage, 10);
+          
+          const payload = response.data;
+          let reportData = [];
+          let reportMeta = { totalData: 0, totalPages: 1 };
+
+          if (payload && payload.data && Array.isArray(payload.data.data)) {
+            reportData = payload.data.data;
+            reportMeta = payload.data.meta;
+          } else if (payload && Array.isArray(payload.data)) {
+            reportData = payload.data;
+            reportMeta = payload.meta;
+          }
+
+          setMyReports(reportData);
+          if (reportMeta) {
+            setMeta(reportMeta);
+          }
+        }
+      } catch (error) {
+        console.error('Gagal mengambil data laporan saya:', error);
+        setMyReports([]);
+        setMeta({ totalData: 0, totalPages: 1 });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMyReports();
+  }, [currentPage, activeTab]); // Tambahkan activeTab ke dalam dependency array
+
   const topBreadcrumb = (
     <Breadcrumb>
       <BreadcrumbList>
@@ -64,7 +129,8 @@ export default function MyReport() {
           <h1 className="text-[28px] font-bold !text-neutral-900 mb-6 tracking-tight">
             Laporan Saya
           </h1>
-          <Tabs defaultValue="semua" className="w-fit">
+          {/* PASANG value & onValueChange DI SINI */}
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-fit">
             <TabsList className="bg-transparent border-b border-neutral-200 w-full justify-start rounded-none h-auto p-0 space-x-8">
               <TabsTrigger
                 value="semua"
@@ -122,41 +188,28 @@ export default function MyReport() {
             />
           </div>
 
-          {/* Kondisional Render: Jika ada data tampilkan tabel, jika kosong tampilkan Empty State */}
-          {myReports.length > 0 ? (
+          {/* Kondisional Render: Loading / Table / Empty State */}
+          {isLoading ? (
+            <div className="py-20 flex flex-col items-center justify-center">
+              <Loader2 className="h-8 w-8 text-[#8B52A1] animate-spin mb-4" />
+              <p className="text-neutral-500">Memuat data laporan...</p>
+            </div>
+          ) : myReports.length > 0 ? (
             <>
               {/* Reports Table - My Report */}
               <div className="w-full overflow-x-auto pt-2">
                 <Table>
                   <TableHeader>
                     <TableRow className="border-b border-neutral-100 hover:bg-transparent">
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        ID
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        Nama Barang
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        Deskripsi Barang
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        Kategori
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        Lokasi Kehilangan
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        No. HP
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        Status
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">
-                        Dibuat pada
-                      </TableHead>
-                      <TableHead className="text-neutral-400 font-medium text-center whitespace-nowrap h-10">
-                        Actions
-                      </TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">ID</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">Nama Barang</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">Deskripsi Barang</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">Kategori</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">Lokasi Kehilangan</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">No. HP</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">Status</TableHead>
+                      <TableHead className="text-neutral-400 font-medium whitespace-nowrap h-10">Dibuat pada</TableHead>
+                      <TableHead className="text-neutral-400 font-medium text-center whitespace-nowrap h-10">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -166,14 +219,14 @@ export default function MyReport() {
                         className="border-none hover:bg-neutral-50/50"
                       >
                         <TableCell className="font-medium text-neutral-600 whitespace-nowrap py-4">
-                          {report.id}
+                          {report.id.substring(0, 10)}...
                         </TableCell>
                         <TableCell className="text-neutral-800 whitespace-nowrap py-4">
-                          {report.item}
+                          {report.item_name}
                         </TableCell>
                         <TableCell className="whitespace-nowrap py-4">
                           <a
-                            href="#"
+                            href={`/laporan/detail/${report.id}`}
                             className="text-[#4DB5AC] hover:text-[#3d968e] underline underline-offset-4 decoration-1 font-medium"
                           >
                             Lihat detail
@@ -181,31 +234,39 @@ export default function MyReport() {
                         </TableCell>
                         <TableCell className="whitespace-nowrap py-4">
                           <span
-                            className={`font-medium ${report.category === 'Hilang' ? 'text-[#EF4444]' : 'text-[#22C55E]'}`}
+                            className={`font-medium ${report.category === 'lost' ? 'text-[#EF4444]' : 'text-[#22C55E]'}`}
                           >
-                            {report.category}
+                            {report.category === 'lost' ? 'Hilang' : 'Ditemukan'}
                           </span>
                         </TableCell>
                         <TableCell className="text-neutral-800 whitespace-nowrap py-4">
                           <div
                             className="max-w-[150px] truncate"
-                            title={report.location}
+                            title={report.location_lost}
                           >
-                            {report.location}
+                            {report.location_lost}
                           </div>
                         </TableCell>
                         <TableCell className="text-neutral-800 whitespace-nowrap py-4">
-                          {report.phone}
+                          {report.contact_phone}
                         </TableCell>
                         <TableCell className="whitespace-nowrap py-4">
                           <span
-                            className={`font-medium ${report.status === 'Waiting' ? 'text-[#EAB308]' : 'text-[#22C55E]'}`}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              report.status === 'claimed'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-amber-100 text-amber-700'
+                            }`}
                           >
-                            {report.status}
+                            {report.status === 'claimed' ? 'Claimed' : 'Unclaimed'}
                           </span>
                         </TableCell>
                         <TableCell className="text-neutral-800 whitespace-nowrap py-4">
-                          {report.date}
+                          {new Date(report.created_at || report.date_lost).toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
                         </TableCell>
                         <TableCell className="text-center whitespace-nowrap py-4">
                           <div className="flex items-center justify-center gap-3">
@@ -232,29 +293,47 @@ export default function MyReport() {
               {/* Pagination Section */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 pb-2 border-t-0 border-neutral-100">
                 <p className="text-[14px] text-blue-500 font-medium">
-                  {myReports.length} dari {myReports.length} Laporan
+                  Menampilkan {myReports.length} laporan di halaman ini (Total: {meta.totalData} Laporan)
                 </p>
                 <Pagination className="mx-0 w-auto">
                   <PaginationContent className="gap-2">
                     <PaginationItem>
                       <PaginationPrevious
                         href="#"
-                        className="border border-neutral-200 bg-white hover:bg-neutral-50 rounded-md shadow-sm h-9 w-9 p-0 flex items-center justify-center text-neutral-500 [&>span]:hidden"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                        className={`border border-neutral-200 rounded-md shadow-sm h-9 px-3 flex items-center justify-center text-neutral-500 ${
+                          currentPage === 1
+                            ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
+                            : 'hover:bg-neutral-50 bg-white'
+                        }`}
                       />
                     </PaginationItem>
+
                     <PaginationItem>
                       <PaginationLink
                         href="#"
                         isActive
-                        className="bg-[#8B52A1] text-white hover:bg-[#7a488e] hover:text-white border-none rounded-md shadow-sm h-9 w-9 p-0 flex items-center justify-center font-normal"
+                        className="bg-[#8B52A1] text-white hover:bg-[#7a488e] border-none rounded-md shadow-sm h-9 w-9 p-0 flex items-center justify-center font-normal"
                       >
-                        1
+                        {currentPage}
                       </PaginationLink>
                     </PaginationItem>
+
                     <PaginationItem>
                       <PaginationNext
                         href="#"
-                        className="border border-neutral-200 bg-white hover:bg-neutral-50 rounded-md shadow-sm h-9 w-9 p-0 flex items-center justify-center text-neutral-500 [&>span]:hidden"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < meta.totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                        className={`border border-neutral-200 rounded-md shadow-sm h-9 px-3 flex items-center justify-center text-neutral-500 ${
+                          currentPage === meta.totalPages || meta.totalPages === 0
+                            ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
+                            : 'hover:bg-neutral-50 bg-white'
+                        }`}
                       />
                     </PaginationItem>
                   </PaginationContent>
@@ -271,8 +350,7 @@ export default function MyReport() {
                 Belum ada laporan
               </h3>
               <p className="text-neutral-500 text-[14px] max-w-[320px] mx-auto mb-6 leading-relaxed">
-                Kamu belum memiliki riwayat laporan apapun saat ini. Silakan
-                tambah laporan baru terlebih dahulu.
+                Kamu belum memiliki riwayat laporan untuk periode ini.
               </p>
             </div>
           )}

@@ -19,6 +19,7 @@
   "dependencies": {
     "cors": "^2.8.6",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
     "nanoid": "^5.1.11"
   }
 }

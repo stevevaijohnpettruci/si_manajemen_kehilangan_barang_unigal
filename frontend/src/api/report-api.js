@@ -37,6 +37,19 @@ function createReport(reportData, token) {
   });
 }
 
+function getReportByUserId(userId, token, filter = '', page = 1, limit = 10) {
+  return axios.get(`${BASE_URL}/reports/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      filter: filter, // Tambahkan ini
+      page: page,
+      limit: limit,
+    },
+  });
+}
+
 // PUT /api/v1/reports/:id - Memperbarui laporan (misal edit deskripsi atau ubah status)
 function updateReport(id, reportData, token) {
   return axios.put(`${BASE_URL}/reports/${id}`, reportData, {
@@ -55,4 +68,4 @@ function deleteReport(id, token) {
   });
 }
 
-export { getReports, getReportById, createReport, updateReport, deleteReport };
+export { getReports, getReportById, getReportByUserId, createReport, updateReport, deleteReport };

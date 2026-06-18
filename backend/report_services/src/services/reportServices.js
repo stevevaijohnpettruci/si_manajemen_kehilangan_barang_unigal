@@ -18,17 +18,15 @@ export const createReport = async (payload) => {
 };
 
 export const getReports = async (filter, limit, offset) => {
-  // Jika tidak ada filter atau filter = "semua", ambil semua data dengan pagination
-  console.log("👉 Nilai filter yang masuk ke service:", filter);
   if (!filter || filter === 'semua') {
     return await ReportRepositories.findAllReports(limit, offset);
   }
 
   const today = new Date();
   let startDate = new Date();
-  let endDate = new Date(today.setHours(23, 59, 59, 999)); 
+  let endDate = new Date(today.setHours(23, 59, 59, 999));
   if (filter === 'hari-ini') {
-    startDate.setHours(0, 0, 0, 0)
+    startDate.setHours(0, 0, 0, 0);
   } else if (filter === '3-hari') {
     startDate.setDate(startDate.getDate() - 3);
     startDate.setHours(0, 0, 0, 0);
@@ -39,17 +37,26 @@ export const getReports = async (filter, limit, offset) => {
     return await ReportRepositories.findAllReports(limit, offset);
   }
 
-  console.log(`🔎 Node.js mencari data dari: ${startDate.toLocaleString('id-ID')} sampai ${endDate.toLocaleString('id-ID')}`);
-
   const reports = await ReportRepositories.findReportsByDate(
     startDate,
     endDate,
     limit,
-    offset
+    offset,
   );
-  
+
   return reports;
 };
+
+export const getReportByUserId = async (userId, filter, limit, offset) => {
+  const reports = await ReportRepositories.findReportByUserId(
+    userId,
+    filter,
+    limit,
+    offset,
+  );
+  return reports;
+};
+
 export const getReportById = async (id) => {
   const report = await ReportRepositories.findReportById(id);
   if (!report) throw new NotFoundError('Report tidak ditemukan');

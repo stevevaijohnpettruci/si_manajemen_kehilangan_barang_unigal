@@ -4,15 +4,16 @@ import {
   createReport,
   updateReport,
   deleteReport,
+  getReportByUserId
 } from '../services/reportServices.js';
 import response from '../../../shared/utils/response.js';
 
 export const handleGetReports = async (req, res, next) => {
   try {
-    const queryParams = req.query; 
-    
+    const queryParams = req.query;
+
     const data = await getReports(queryParams);
-    
+
     response(res, 200, 'success', data);
   } catch (err) {
     next(err);
@@ -28,6 +29,22 @@ export const handleGetReportById = async (req, res, next) => {
   }
 };
 
+export const handleGetReportByUserId = async (req, res, next) => {
+  try {
+    const userId = req.user.id; 
+    
+    // 1. TANGKAP page dan limit dari query frontend
+    const { page, limit } = req.query;
+    
+    // 2. Lempar semuanya ke service
+    const data = await getReportByUserId(userId, page, limit);
+
+    response(res, 200, 'success', data);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const handleCreateReport = async (req, res, next) => {
   try {
     const payload = {
@@ -35,8 +52,12 @@ export const handleCreateReport = async (req, res, next) => {
       user_id: req.user.id,
     };
 
-    const response = await createReport(payload);
-    return res.status(201).json(response);
+    if (req.file) {
+      payload.image_url = `/uploads/${req.file.filename}`;
+    }
+
+    const data = await createReport(payload);
+    response(res, 201, 'Report berhasil dibuat', data);
   } catch (err) {
     next(err);
   }
@@ -44,7 +65,13 @@ export const handleCreateReport = async (req, res, next) => {
 
 export const handleUpdateReport = async (req, res, next) => {
   try {
-    const data = await updateReport(req.params.id, req.body);
+    const payload = { ...req.body };
+
+    if (req.file) {
+      payload.image_url = `/uploads/${req.file.filename}`;
+    }
+
+    const data = await updateReport(req.params.id, payload);
     response(res, 200, 'report updated', data);
   } catch (err) {
     next(err);

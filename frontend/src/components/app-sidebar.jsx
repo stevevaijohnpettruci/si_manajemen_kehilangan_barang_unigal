@@ -29,7 +29,10 @@ const navigation = [
   },
   {
     label: 'Klaim',
-    items: [{ title: 'Riwayat Klaim', href: '/klaim/riwayat' }],
+    items: [
+      { title: 'Pengajuan Masuk', href: '/klaim/pengajuan-masuk' },
+      { title: 'Riwayat Klaim', href: '/klaim/riwayat-klaim' },
+    ],
   },
   {
     label: 'Settings',
@@ -99,9 +102,9 @@ export function AppSidebar() {
       </SidebarHeader>
 
       {/* Content - Navigation */}
-      <SidebarContent className="px-2 py-4">
+      <SidebarContent className="px-2 ">
         {navigation.map((group) => (
-          <SidebarGroup key={group.label} className="mb-2">
+          <SidebarGroup key={group.label}>
             <SidebarGroupLabel className="text-white font-bold text-sm px-2 mb-1 uppercase tracking-wide">
               {group.label}
             </SidebarGroupLabel>

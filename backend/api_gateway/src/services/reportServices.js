@@ -2,11 +2,31 @@ import httpClient from '../utils/httpClient.js';
 import { REPORT_SERVICE_URL } from '../config/env.js';
 
 export const getReports = async (queryParams = {}) => {
-  const { data } = await httpClient.get(`${REPORT_SERVICE_URL}/api/v1/reports`, {
-    params: queryParams,
-  });
+  const { data } = await httpClient.get(
+    `${REPORT_SERVICE_URL}/api/v1/reports`,
+    {
+      params: queryParams,
+    },
+  );
   return data;
 };
+
+// 1. Tambahkan parameter page dan limit
+export const getReportByUserId = async (userId, page, limit) => {
+  // 2. Kirim params tersebut ke Report Services
+  const response = await httpClient.get(
+    `${REPORT_SERVICE_URL}/api/v1/reports/user/${userId}`,
+    {
+      params: {
+        page: page,
+        limit: limit,
+      },
+    },
+  );
+
+  return response.data.data;
+};
+
 
 export const getReportById = async (id) => {
   const { data } = await httpClient.get(
