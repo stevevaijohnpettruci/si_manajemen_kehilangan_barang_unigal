@@ -27,7 +27,6 @@ export const getReportByUserId = async (userId, page, limit) => {
   return response.data.data;
 };
 
-
 export const getReportById = async (id) => {
   const { data } = await httpClient.get(
     `${REPORT_SERVICE_URL}/api/v1/reports/${id}`,
@@ -54,6 +53,17 @@ export const updateReport = async (id, payload) => {
 export const deleteReport = async (id) => {
   const { data } = await httpClient.delete(
     `${REPORT_SERVICE_URL}/api/v1/reports/${id}`,
+  );
+  return data;
+};
+
+export const updateReportStatus = async (id, payload, token) => {
+  const { data } = await httpClient.put(
+    `${REPORT_SERVICE_URL}/api/v1/reports/status/${id}`,
+    payload,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
   );
   return data;
 };

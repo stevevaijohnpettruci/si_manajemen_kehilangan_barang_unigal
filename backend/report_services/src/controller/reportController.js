@@ -5,6 +5,7 @@ import {
   updateReport,
   deleteReport,
   getReportByUserId,
+  updateReportStatus,
 } from '../services/reportServices.js';
 import response from '../../../shared/utils/response.js';
 
@@ -49,17 +50,17 @@ export const handleGetReportById = async (req, res, next) => {
 export const handleGetReportByUserId = async (req, res, next) => {
   try {
     const { user_id } = req.params;
-    
+
     // 1. Tangkap filter dari Frontend
     const { filter } = req.query || {};
-    
+
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const offset = (page - 1) * limit;
-    
+
     // 2. Oper 'filter' ke Service
     const result = await getReportByUserId(user_id, filter, limit, offset);
-    
+
     response(res, 200, 'success', result);
   } catch (err) {
     next(err);
@@ -82,6 +83,17 @@ export const handleDeleteReport = async (req, res, next) => {
   try {
     await deleteReport(req.params.id);
     response(res, 200, 'Report berhasil dihapus', null);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleUpdateReportStatus = async (req, res, next) => {
+  try {
+    const { status } = req.validated;
+
+    const data = await updateReportStatus(req.params.id, status);
+    response(res, 200, 'Status report berhasil diupdate', data);
   } catch (err) {
     next(err);
   }

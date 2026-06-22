@@ -4,7 +4,8 @@ import {
   createReport,
   updateReport,
   deleteReport,
-  getReportByUserId
+  getReportByUserId,
+  updateReportStatus,
 } from '../services/reportServices.js';
 import response from '../../../shared/utils/response.js';
 
@@ -31,11 +32,11 @@ export const handleGetReportById = async (req, res, next) => {
 
 export const handleGetReportByUserId = async (req, res, next) => {
   try {
-    const userId = req.user.id; 
-    
+    const userId = req.user.id;
+
     // 1. TANGKAP page dan limit dari query frontend
     const { page, limit } = req.query;
-    
+
     // 2. Lempar semuanya ke service
     const data = await getReportByUserId(userId, page, limit);
 
@@ -82,6 +83,18 @@ export const handleDeleteReport = async (req, res, next) => {
   try {
     const data = await deleteReport(req.params.id);
     response(res, 200, 'report deleted', data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleUpdateReportStatus = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    const payload = req.validated || req.body;
+    const data = await updateReportStatus(req.params.id, payload, token);
+    
+    response(res, 200, 'report status updated', data);
   } catch (err) {
     next(err);
   }

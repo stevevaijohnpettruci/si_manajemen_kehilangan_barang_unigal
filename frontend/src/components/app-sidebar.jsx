@@ -35,8 +35,8 @@ const navigation = [
     ],
   },
   {
-    label: 'Settings',
-    items: [{ title: 'Notification Settings', href: '/settings/notifikasi' }],
+    label: 'Notifikasi',
+    items: [{ title: 'Riwayat Notifikasi', href: '/notifikasi/riwayat' }],
   },
 ];
 

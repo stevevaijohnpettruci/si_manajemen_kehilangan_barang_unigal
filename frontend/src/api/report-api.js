@@ -68,4 +68,24 @@ function deleteReport(id, token) {
   });
 }
 
-export { getReports, getReportById, getReportByUserId, createReport, updateReport, deleteReport };
+function updateReportStatus(id, payload, token) {
+  return axios.put(
+    `${BASE_URL}/reports/status/${id}`,
+    payload, // Kirim status dalam body
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+}
+
+export {
+  getReports,
+  getReportById,
+  getReportByUserId,
+  createReport,
+  updateReport,
+  deleteReport,
+  updateReportStatus,
+};

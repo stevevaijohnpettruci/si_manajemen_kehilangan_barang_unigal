@@ -48,7 +48,7 @@ class ReportRepositories {
 
     // 2. Hitung total data yang statusnya 'unclaimed' saja
     const countResult = await this._pool.query(
-      "SELECT COUNT(*) FROM reports WHERE status = 'unclaimed'"
+      "SELECT COUNT(*) FROM reports WHERE status = 'unclaimed'",
     );
     const totalData = parseInt(countResult.rows[0].count, 10);
 
@@ -128,10 +128,20 @@ class ReportRepositories {
     };
   }
 
+  async updateReportStatus(id, status) {
+    const result = await this._pool.query(
+      'UPDATE reports SET status = $1 WHERE id = $2 RETURNING id',
+
+      [status, id],
+    );
+
+    return result.rows[0];
+  }
+
   async findReportByUserId(userId, filter, limit, offset) {
     // 1. Tentukan kondisi filter berdasarkan parameter yang dikirim frontend
     let dateFilter = '';
-    
+
     if (filter === 'hari-ini') {
       dateFilter = "AND created_at >= NOW() - INTERVAL '1 day'";
     } else if (filter === '3-hari') {

@@ -387,9 +387,7 @@ export default function ClaimInbox() {
 
       {/* SHADCN DIALOG / MODAL REVIEW */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        {/* REVISI 1: Tambahkan flex flex-col dan max-h-[90vh] agar modal menyesuaikan tinggi layar */}
         <DialogContent className="sm:max-w-[600px] w-[95vw] max-h-[90vh] p-0 flex flex-col overflow-hidden bg-white rounded-2xl">
-          {/* REVISI 2: Tambahkan shrink-0 agar header tidak ikut mengecil */}
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-neutral-100 shrink-0">
             <DialogTitle className="text-xl font-bold text-neutral-900">
               Review Pengajuan
@@ -452,8 +450,6 @@ export default function ClaimInbox() {
               </div>
             </div>
           )}{' '}
-          {/* <-- PERBAIKAN: Hanya pakai )} bukan )}} */}
-          {/* REVISI 4: Tambahkan shrink-0 agar footer tidak ikut ter-compress */}
           <DialogFooter className="px-6 py-4 bg-white border-t border-neutral-100 flex items-center justify-end gap-2 sm:gap-0 shrink-0">
             {selectedClaim?.status === 'pending' ? (
               <div className="flex gap-3 w-full sm:w-auto">

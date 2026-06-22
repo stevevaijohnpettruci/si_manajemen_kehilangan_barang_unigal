@@ -23,6 +23,7 @@ import Swal from 'sweetalert2';
 
 // Asumsi kamu sudah punya fungsi ini di report-api.js
 import { getReportById } from '@/api/report-api';
+import { updateReportStatus } from '@/api/report-api';
 
 export default function ReportDetail() {
   const { id } = useParams();
@@ -76,6 +77,35 @@ export default function ReportDetail() {
       minute: '2-digit',
     };
     return new Date(dateString).toLocaleDateString('id-ID', options) + ' WIB';
+  };
+
+  const handleConfirmResolved = () => {
+    Swal.fire({
+      title: 'Konfirmasi Selesai',
+      text: isLost
+        ? 'Apakah Anda yakin barang ini sudah ditemukan?'
+        : 'Apakah Anda yakin barang ini sudah dikembalikan ke pemiliknya?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#8B52A1',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, Selesai!',
+      cancelButtonText: 'Batal',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const token = localStorage.getItem('accessToken');
+        await updateReportStatus(report.id, { status: 'claimed' }, token);
+
+        Swal.fire(
+          'Berhasil!',
+          'Status laporan berhasil diperbarui.',
+          'success',
+        ).then(() => {
+          // Refresh halaman atau fetch ulang data
+          window.location.reload();
+        });
+      }
+    });
   };
 
   const topBreadcrumb = (
@@ -148,9 +178,7 @@ export default function ReportDetail() {
                   : 'bg-orange-50 text-orange-600 border-orange-100'
               }`}
             >
-              {report.status === 'claimed'
-                ? 'Claimed'
-                : 'Unclaimed'}
+              {report.status === 'claimed' ? 'Claimed' : 'Unclaimed'}
             </span>
           </div>
         </div>
@@ -266,16 +294,31 @@ export default function ReportDetail() {
                   Kembali
                 </Button>
 
-                {/* Tampilkan tombol tindak lanjut HANYA JIKA laporan belum diklaim DAN bukan laporan milik diri sendiri */}
-                {report.status !== 'claimed' && !isOwner && (
-                  <Button
-                    onClick={() =>
-                      navigate(`/laporan/tindak-lanjut/${report.id}`)
-                    }
-                    className="bg-[#8B52A1] hover:bg-[#7a488e] text-white rounded-md px-8 h-11 font-medium shadow-none"
-                  >
-                    {isLost ? 'Saya Menemukan Barang Ini' : 'Klaim Barang Ini'}
-                  </Button>
+                {/* Logika Tombol Aksi HANYA JIKA status belum claimed */}
+                {report.status !== 'claimed' && (
+                  <>
+                    {isOwner ? (
+                      <Button
+                        onClick={handleConfirmResolved}
+                        className="bg-[#22C55E] hover:bg-[#16a34a] text-white rounded-md px-8 h-11 font-medium shadow-none"
+                      >
+                        {isLost
+                          ? 'Konfirmasi Barang Ditemukan'
+                          : 'Konfirmasi Barang Dikembalikan'}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          navigate(`/laporan/tindak-lanjut/${report.id}`)
+                        }
+                        className="bg-[#8B52A1] hover:bg-[#7a488e] text-white rounded-md px-8 h-11 font-medium shadow-none"
+                      >
+                        {isLost
+                          ? 'Saya Menemukan Barang Ini'
+                          : 'Klaim Barang Ini'}
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

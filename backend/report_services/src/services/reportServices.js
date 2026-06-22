@@ -69,6 +69,12 @@ export const updateReport = async (id, payload) => {
   return ReportRepositories.updateReport(id, payload);
 };
 
+export const updateReportStatus = async (id, status) => {
+  const report = await ReportRepositories.findReportById(id);
+  if (!report) throw new NotFoundError('Report tidak ditemukan');
+  return ReportRepositories.updateReportStatus(id, status);
+};
+
 export const deleteReport = async (id) => {
   const report = await ReportRepositories.findReportById(id);
   if (!report) throw new NotFoundError('Report tidak ditemukan');

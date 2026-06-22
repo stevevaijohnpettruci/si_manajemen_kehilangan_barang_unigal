@@ -11,6 +11,7 @@ import Claim from './pages/claim/Claim';
 import ReportDetail from './pages/report/ReportDetail';
 import ClaimHistory from './pages/claim/ClaimHistory';
 import ClaimInbox from './pages/claim/ClaimInbox';
+import Notification from './pages/notification/Notification';
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
         {/* Fitur Klaim */}
         <Route path="/klaim/riwayat-klaim" element={<ClaimHistory />} />
         <Route path="/klaim/pengajuan-masuk" element={<ClaimInbox />} />
+
+        <Route path="/notifikasi/riwayat" element={<Notification />} />
       </Route>
     </Routes>
   );

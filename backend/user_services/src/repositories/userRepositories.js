@@ -6,9 +6,10 @@ class UserRepositories {
   }
 
   async findUserById(id) {
-    const result = await this.pool.query('SELECT id FROM users WHERE id = $1', [
-      id,
-    ]);
+    const result = await this.pool.query(
+    'SELECT id, email, full_name FROM users WHERE id = $1',  // ← tambah email, full_name
+    [id],
+  );
     return result.rows[0] || null;
   }
 

@@ -1,4 +1,4 @@
-import getRabbitMQChannel from '../../../shared/messaging/rabbitmq.js';
+import { getRabbitMQChannel } from '../../../shared/messaging/rabbitmq.js';
 import userRepositories from '../repositories/userRepositories.js';
 
 const QUEUE = 'user.verify';
@@ -16,8 +16,13 @@ const startUserRpcServer = async () => {
 
     channel.sendToQueue(
       msg.properties.replyTo,
-      Buffer.from(JSON.stringify({ exists: !!user })),
-      { correlationId: msg.properties.correlationId }
+      Buffer.from(
+        JSON.stringify({
+          exists: !!user,
+          user: user ?? null, // ← tambahkan ini
+        }),
+      ),
+      { correlationId: msg.properties.correlationId },
     );
 
     channel.ack(msg);

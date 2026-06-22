@@ -2,12 +2,9 @@ import httpClient from '../utils/httpClient.js';
 import { CLAIM_SERVICE_URL } from '../config/env.js';
 
 export const getClaims = async (queryParams = {}) => {
-  const { data } = await httpClient.get(
-    `${CLAIM_SERVICE_URL}/api/v1/claims`,
-    {
-      params: queryParams,
-    },
-  );
+  const { data } = await httpClient.get(`${CLAIM_SERVICE_URL}/api/v1/claims`, {
+    params: queryParams,
+  });
   return data;
 };
 
@@ -57,6 +54,9 @@ export const updateClaim = async (id, payload) => {
   const { data } = await httpClient.put(
     `${CLAIM_SERVICE_URL}/api/v1/claims/${id}`,
     payload,
+    {
+      timeout: 30000,
+    },
   );
   return data;
 };
