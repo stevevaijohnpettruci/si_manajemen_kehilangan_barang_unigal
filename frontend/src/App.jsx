@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import Report from './pages/report/Report';
 import MyReport from './pages/report/MyReport';
+import EditReport from './pages/report/EditReport';
 import CreateReport from './pages/report/CreateReport';
 import Navbar from './components/Navbar';
 import GuestRoute from './routes/GuestRoute';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/laporan/semua" element={<Report />} />
         <Route path="/laporan/saya" element={<MyReport />} />
         <Route path="/laporan/buat" element={<CreateReport />} />
+        <Route path="/laporan/edit/:id" element={<EditReport />} />
         <Route path="/laporan/tindak-lanjut/:id" element={<Claim />} />
         <Route path="/laporan/detail/:id" element={<ReportDetail />} />
 

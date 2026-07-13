@@ -33,13 +33,8 @@ export const handleGetReportById = async (req, res, next) => {
 export const handleGetReportByUserId = async (req, res, next) => {
   try {
     const userId = req.user.id;
-
-    // 1. TANGKAP page dan limit dari query frontend
-    const { page, limit } = req.query;
-
-    // 2. Lempar semuanya ke service
-    const data = await getReportByUserId(userId, page, limit);
-
+    const { page, limit, filter } = req.query;
+    const data = await getReportByUserId(userId, page, limit, filter);
     response(res, 200, 'success', data);
   } catch (err) {
     next(err);

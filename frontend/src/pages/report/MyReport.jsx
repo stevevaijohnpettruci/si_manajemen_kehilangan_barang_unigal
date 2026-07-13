@@ -276,7 +276,10 @@ export default function MyReport() {
                                 strokeWidth={2}
                               />
                             </button>
-                            <button className="text-blue-500 hover:text-blue-600 transition-colors">
+                            <button
+                              onClick={() => navigate(`/laporan/edit/${report.id}`)}
+                              className="text-blue-500 hover:text-blue-600 transition-colors"
+                            >
                               <Pencil
                                 className="h-[18px] w-[18px]"
                                 strokeWidth={2}
